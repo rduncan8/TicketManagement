@@ -1,0 +1,193 @@
+<!--Reed Duncan-->
+
+<!doctype html>
+<html>
+<head>
+	<title>CSC425 Project</title>
+	<style>
+		body {
+			font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+			background-color: #EC9F28;
+		}
+
+		.sidebar {
+			position: fixed;
+			top: 0px;
+			left: 0px;
+			bottom: 0px;
+			width: 20%;
+			height: 100%;
+			float: left;
+			overflow-y: scroll;
+			background-color: #7B0000;
+		}
+
+		.sidebar h1 {
+			padding-left: 5%;
+			color: #EC9F28;
+			padding-bottom: 5%;
+		}
+
+		.sidebar h2, h3 {
+			padding-left: 10%;
+			color: #DAF7A6;
+		}
+
+		.record:hover {
+			background-color: #A72E08;
+		}
+
+		.record:active {
+			background-color: #EC4705;
+		}
+
+		.record {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+
+		#content {
+			margin-left: 20%;
+			padding-top: 5%;
+			padding-left: 8%;
+		}
+
+		.delete {
+			background-color: #7B0000;
+			width: 10%;
+			padding-top:0.05em;
+			padding-bottom:0.05em;
+			text-align: center;
+			vertical-align: center;
+			color: #DAF7A6;
+		}
+
+		.submit {
+			background-color: #7B0000;
+			width: 10%;
+			padding-top:0.05em;
+			padding-bottom:0.05em;
+			text-align: center;
+			vertical-align: center;
+			color: #DAF7A6;
+		}
+
+		.submit:hover {
+			background-color: #A72E08;
+		}
+
+		.submit:active {
+			background-color: #EC4705;
+		}
+
+		.delete:hover {
+			background-color: #A72E08;
+		}
+
+		.delete:active {
+			background-color: #EC4705;
+		}
+	</style>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+		$(function(){
+			var socket = io();
+
+			socket.on('set tickets', function(html){
+				$('#tickets').html(html);
+			});
+
+			socket.on('set record', function(html){
+				$('#content').html(html);
+			});
+
+			socket.on('set new', function(html){
+				$('#content').html(html);
+			});
+
+			socket.on('delete record', function(id){
+
+			});
+
+			$(document).on('click', '#submit', function(){
+				if(validateForm()){
+					var dict = {
+						'firstName': document.forms['form']['firstName'].value,
+						'lastName': document.forms['form']['lastName'].value,
+						'ticketNumber': document.forms['form']['ticketNumber'].value,
+						'phoneNumber': document.forms['form']['phoneNumber1'].value + document.forms['form']['phoneNumber2'].value + document.forms['form']['phoneNumber3'].value,
+						'date': document.forms['form']['year'].value + '-' + document.forms['form']['month'].value + '-' + document.forms['form']['day'].value,
+						'note': document.forms['form']['notes'].value
+					};
+					socket.emit('new record', dict);
+				}
+			});
+
+			$(document).on('click', '.record', function(){
+				socket.emit('get record', this.id);
+			});
+
+			$(document).on('click', '.delete', function(){
+				socket.emit('delete record', this.id);
+			});
+
+			function validateForm(){
+				var x = document.forms['form']['firstName'].value;
+				if(x.length < 1 || x.length > 20){
+					alert('First Name must be between 1 and 20 characters.');
+					return false;
+				}
+				x = document.forms['form']['lastName'].value;
+				if(x.length < 1 || x.length > 20){
+					alert('Last Name must be between 1 and 20 characters.');
+					return false;
+				}
+				x = document.forms['form']['phoneNumber1'].value;
+				if(x.length != 3){
+					alert('Phone Number should be entered as (xxx)-xxx-xxxx');
+					return false;
+				}
+				x = document.forms['form']['phoneNumber2'].value;
+				if(x.length != 3){
+					alert('Phone Number should be entered as (xxx)-xxx-xxxx');
+					return false;
+				}
+				x = document.forms['form']['phoneNumber3'].value;
+				if(x.length != 4){
+					alert('Phone Number should be entered as (xxx)-xxx-xxxx');
+					return false;
+				}
+				x = document.forms['form']['ticketNumber'].value;
+				if(x.length < 1 || x.length > 30){
+					alert('Ticket Number must be between 1 and 30 characters.');
+					return false;
+				}
+				x = document.forms['form']['month'].value;
+				if(x.length != 2){
+					alert('Today\'s Date should be entered as mm/dd/yyyy');
+					return false;
+				}
+				x = document.forms['form']['day'].value;
+				if(x.length != 2){
+					alert('Today\' Date should be entered as mm/dd/yyyy');
+					return false;
+				}
+				x = document.forms['form']['year'].value;
+				if(x.length != 4){
+					alert('Today\' Date should be entered as mm/dd/yyyy');
+					return false;
+				}
+				return true;
+			}
+		});
+	</script>
+</head>
+<body>
+	<div class="sidebar">
+		<h1>Tickets</h1>
+		<div id="tickets"></div>
+	</div>
+	<div id="content"></div>
+</body>
+</html>

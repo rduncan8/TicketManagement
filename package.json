@@ -1,0 +1,11 @@
+{
+	"name": "myProject",
+	"version": "0.0.1",
+	"description": "CSC425 Project",
+	"dependencies": {
+		"express": "^4.15.2",
+		"jquery": "^3.2.1",
+		"mysql": "^2.15.0",
+		"socket.io": "^2.0.4"
+	}
+}
